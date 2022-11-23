@@ -6,12 +6,14 @@ namespace MSJsonFileEditor;
 
 public partial class MainPage : ContentPage
 {
-    private static int ViewerColumnsNumber = 5;
+    private static int ViewerColumnsNumber  = 5;
+    private static int MaxFileNameLength    = 40;
     
     private FileExplorerController _controller;
     
     private Label _statusLabel;
     private ScrollView _filesystemViewerWrapper;
+    private ScrollView _starredFoldersWrapper;
     private ImageButton _starButton;
 
     public MainPage()
@@ -101,8 +103,7 @@ public partial class MainPage : ContentPage
             BackgroundColor = Colors.Transparent,
         };
         
-        SetStar(false);
-        _starButton.Clicked += (sender, args) => SetStar(DateTime.Now.Second % 2 == 0 ? true : false); 
+        _starButton.Clicked += (sender, args) => SetStar(!_controller.IsStarred()); ; 
 
         backwardButton.Clicked  += (sender, args) => _controller.ReturnBack();
         forwardButton.Clicked   += (sender, args) => _controller.ReturnForward(); 
@@ -119,6 +120,8 @@ public partial class MainPage : ContentPage
 
     private View GetQuickAccessPanel()
     {
+        _starredFoldersWrapper = new ScrollView { Content = GetFavoritesAccessElement() };
+        
         var stack = new VerticalStackLayout()
         {
             Padding = 15,
@@ -128,7 +131,7 @@ public partial class MainPage : ContentPage
                 new Label { FontSize = 21, Text = "Quick access" },
                 GetThisComputerAccessElement(),
                 new Label { FontSize = 21, Text = "Favorites" },
-                GetFavoritesAccessElement()
+                _starredFoldersWrapper
             }
         };
         return stack;
@@ -226,6 +229,8 @@ public partial class MainPage : ContentPage
         _filesystemViewerWrapper.Content = grid;
 
         Title = _controller.CurrentFolder.Path;
+        
+        SetStarIcon(_controller.IsStarred());
     }
 
     private View GetFilesystemComponentView(FilesystemComponent component, string imagePath)
@@ -241,9 +246,14 @@ public partial class MainPage : ContentPage
         if (component is Folder)
             image.Clicked += (sender, args) => _controller.GoTo((Folder)component); 
 
+        // cropping name if needed
+        var name = component.Name.Length > MaxFileNameLength 
+            ? component.Name[..MaxFileNameLength] + "..." 
+            : component.Name;
+        
         var label = new Label
         {
-            Text = component.Name, 
+            Text = name, 
             FontSize = 16,
             HorizontalTextAlignment = TextAlignment.Center
         };
@@ -268,13 +278,14 @@ public partial class MainPage : ContentPage
 
     private void SetStar(bool b)
     {
-        if (b)
-        {
-            _starButton.Source = "star_filled.png";
-        }
-        else
-        {
-            _starButton.Source = "star_empty.png";
-        }
+        _controller.SetStar(!_controller.IsStarred());
+        _starredFoldersWrapper.Content = GetFavoritesAccessElement();
+        
+        SetStarIcon(b);
+    }
+
+    private void SetStarIcon(bool b)
+    {
+        _starButton.Source = b ? "star_filled.png" : "star_empty.png";
     }
 }

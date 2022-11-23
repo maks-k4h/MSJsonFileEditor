@@ -25,6 +25,7 @@ public class FileExplorerController
         SetStarredElements();
     }
 
+
     public void GoTo(Folder folder)
     {
         folder.Open();
@@ -45,6 +46,26 @@ public class FileExplorerController
         if (CurrentFolder.Parent != null)
             CurrentFolder = CurrentFolder.Parent;
         CurrentFolderUpdated?.Invoke(this, null!);
+    }
+
+    public bool IsStarred()
+    {
+        return CurrentFolder != null && Starred.Contains(CurrentFolder);
+    }
+
+    public void SetStar(bool b)
+    {
+        if (b)
+        {
+            if (!Starred.Contains(CurrentFolder))
+                Starred.Add(CurrentFolder);
+        }
+        else
+        {
+            if (Starred.Contains(CurrentFolder))
+                Starred.Remove(CurrentFolder);
+        }
+        FolderListSaver.TryToSave(Starred);
     }
 
     private void AddDefaultElement(Folder component)
@@ -73,10 +94,10 @@ public class FileExplorerController
 
     private void SetStarredElements()
     {
-        // TODO ...
-        AddStarredElement(new Folder("/Users/makskonevych/Desktop/Books Library of Books/Machine Learning"));
-        AddStarredElement(new Folder("/Users/makskonevych/Documents/C#/Labs", null, "C# labs"));
-        AddStarredElement(new Folder("/Users/makskonevych/Desktop/Books Library of Books/University/Probability"));
-        AddStarredElement(new Folder("/Users/makskonevych/Downloads"));
+        var paths = FolderListSaver.Load();
+        foreach (var path in paths)
+        {
+            AddStarredElement(path);
+        }
     }
 }
