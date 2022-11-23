@@ -53,13 +53,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <MauiXaml Update="Views\FileSystemPage.xaml">
+      <MauiXaml Update="Views\FileExplorerPage.xaml">
         <SubType>Designer</SubType>
       </MauiXaml>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\FileSystemPage.xaml.cs">
+      <Compile Update="Views\FileExplorerPage.xaml.cs">
         <DependentUpon>MainPage.xaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>

@@ -6,19 +6,48 @@ public class FileExplorerController
 {
     public event EventHandler DefaultUpdated;
     public event EventHandler StarredUpdated;
-    public List<FilesystemComponent> Default;
-    public List<FilesystemComponent> Starred;
+    public List<Folder> Default;
+    public List<Folder> Starred;
+
+    public event EventHandler CurrentFolderUpdated;
+    public Folder CurrentFolder;
+    public Folder ReturnedFromFolder = null;
 
     public FileExplorerController()
     {
-        Default = new List<FilesystemComponent>();
-        Starred = new List<FilesystemComponent>();
+        Default = new List<Folder>();
+        Starred = new List<Folder>();
+        
+        // folder by default
+        GoTo(DefaultFolders.Root);
 
         SetDefaultElements();
         SetStarredElements();
     }
 
-    private void AddDefaultElement(FilesystemComponent component)
+    public void GoTo(Folder folder)
+    {
+        folder.Open();
+        CurrentFolder = folder;
+        ReturnedFromFolder = null;
+        CurrentFolderUpdated?.Invoke(this, null!);
+    }
+
+    public void ReturnForward()
+    {
+        CurrentFolder = ReturnedFromFolder?? CurrentFolder;
+        CurrentFolderUpdated?.Invoke(this, null!);
+    }
+
+    public void ReturnBack()
+    {
+        ReturnedFromFolder = CurrentFolder;
+        if (CurrentFolder.Parent != null)
+            CurrentFolder = CurrentFolder.Parent;
+        CurrentFolderUpdated?.Invoke(this, null!);
+    }
+
+    private void AddDefaultElement(Folder component)
     {
         if (!Default.Contains(component))
         {
@@ -27,7 +56,7 @@ public class FileExplorerController
         }
     }
 
-    private void AddStarredElement(FilesystemComponent component)
+    private void AddStarredElement(Folder component)
     {
         if (!Starred.Contains(component))
         {
@@ -38,16 +67,16 @@ public class FileExplorerController
 
     private void SetDefaultElements()
     {
-        AddDefaultElement(new Folder("Desktop"));
-        AddDefaultElement(new Folder("Documents"));
-        AddDefaultElement(new Folder("Pictures"));
+        AddDefaultElement(DefaultFolders.Root);
+        AddDefaultElement(DefaultFolders.Documents);
     }
 
     private void SetStarredElements()
     {
-        AddStarredElement(new Folder("Machine Learning"));
-        AddStarredElement(new Folder("Books Library of Books"));
-        AddStarredElement(new Folder("Probability"));
-        AddStarredElement(new Folder("Bandera Recipes"));
+        // TODO ...
+        AddStarredElement(new Folder("/Users/makskonevych/Desktop/Books Library of Books/Machine Learning"));
+        AddStarredElement(new Folder("/Users/makskonevych/Documents/C#/Labs", null, "C# labs"));
+        AddStarredElement(new Folder("/Users/makskonevych/Desktop/Books Library of Books/University/Probability"));
+        AddStarredElement(new Folder("/Users/makskonevych/Downloads"));
     }
 }
