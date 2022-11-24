@@ -38,9 +38,10 @@ public partial class JsonFileEditorPage : ContentPage
 
     protected override void OnAppearing()
     {
+        Title = JsonFileEditorModel.FileName;
+        base.OnAppearing();
         try
         {
-            base.OnAppearing();
             ShowOkStatus();
             UpdateEditor();
         }

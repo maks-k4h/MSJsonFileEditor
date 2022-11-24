@@ -231,10 +231,14 @@ public partial class MainPage : ContentPage
         // creating files
         foreach (var v in _controller.CurrentFolder.Files)
         {
-            var imagePath = "document2.png";    // default document icon
+            var imagePath = "default_file.png";    // default document icon
             
             if (v.Path.EndsWith(".json"))
-                imagePath = "json.png";
+                imagePath = "json_file.png";
+            if (v.Path.EndsWith(".pdf"))
+                imagePath = "pdf_file.png";
+            if (v.Path.EndsWith(".jpg") || v.Path.EndsWith(".jpeg") || v.Path.EndsWith(".png"))
+                imagePath = "image_file.png";
             
             grid.Add(GetFilesystemComponentView(v, imagePath), p % ViewerColumnsNumber, p / ViewerColumnsNumber);
             ++p;
