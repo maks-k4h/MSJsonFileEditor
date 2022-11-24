@@ -48,6 +48,12 @@ public class FileExplorerController
         CurrentFolderUpdated?.Invoke(this, null!);
     }
 
+    public void Update()
+    {
+        CurrentFolder.Open();
+        CurrentFolderUpdated?.Invoke(this, null!);
+    }
+
     public bool IsStarred()
     {
         return CurrentFolder != null && Starred.Contains(CurrentFolder);

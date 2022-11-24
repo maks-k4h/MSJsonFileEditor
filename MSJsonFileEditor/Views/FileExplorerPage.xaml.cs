@@ -1,6 +1,9 @@
 ﻿using MSJsonFileEditor.Controllers;
 using MSJsonFileEditor.Libs.FileExplorer;
+using MSJsonFileEditor.Models;
 using MSJsonFileEditor.Resources.Styles;
+using MSJsonFileEditor.Views;
+using File = System.IO.File;
 
 namespace MSJsonFileEditor;
 
@@ -27,6 +30,12 @@ public partial class MainPage : ContentPage
         ShowStatus();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _controller.Update();
+    }
+
     private View GetMainPage()
     {
         // the grid is a backbone
@@ -38,7 +47,7 @@ public partial class MainPage : ContentPage
             },
             ColumnDefinitions =
             {
-                new ColumnDefinition{Width = new GridLength(400)},
+                new ColumnDefinition{Width = new GridLength(230)},
                 new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)},
                 new ColumnDefinition{Width = new GridLength(0)},
             }
@@ -85,26 +94,37 @@ public partial class MainPage : ContentPage
             BackgroundColor = Colors.Transparent,
             TextColor = Colors.Black,
             Text = "<",
-            FontSize = 30,
+            FontSize = 20,
         };
         var forwardButton = new Button
         {
             BackgroundColor = Colors.Transparent,
             TextColor = Colors.Black,
-            FontSize = 30,
+            FontSize = 20,
             Text = ">"
         };
 
         _starButton = new ImageButton()
         {
-            HeightRequest = 20,
-            WidthRequest = 20,
-            Scale = .6,
+            HeightRequest = 15,
+            WidthRequest = 15,
+            Scale = .4,
+            BackgroundColor = Colors.Transparent,
+        };
+
+        var plusButton = new ImageButton
+        {
+            HeightRequest = 15,
+            WidthRequest = 15,
+            Scale = .415,
+            Margin = new Thickness(0,2,0,0),
+            Source = "plus.png",
             BackgroundColor = Colors.Transparent,
         };
         
-        _starButton.Clicked += (sender, args) => SetStar(!_controller.IsStarred()); ; 
-
+        _starButton.Clicked += (sender, args) => SetStar(!_controller.IsStarred()); ;
+        plusButton.Clicked += CreateClicked;
+        
         backwardButton.Clicked  += (sender, args) => _controller.ReturnBack();
         forwardButton.Clicked   += (sender, args) => _controller.ReturnForward(); 
         
@@ -112,7 +132,7 @@ public partial class MainPage : ContentPage
         {
             Padding = 5,
             Spacing = 5,
-            Children = { backwardButton, forwardButton, _starButton }
+            Children = { backwardButton, forwardButton, plusButton, _starButton }
         };
 
         return stack;
@@ -128,9 +148,9 @@ public partial class MainPage : ContentPage
             Spacing = 5,
             Children =
             {
-                new Label { FontSize = 21, Text = "Quick access" },
+                new Label { FontSize = 19, Text = "Quick access" },
                 GetThisComputerAccessElement(),
-                new Label { FontSize = 21, Text = "Favorites" },
+                new Label { FontSize = 19, Text = "Favorites" },
                 _starredFoldersWrapper
             }
         };
@@ -204,14 +224,15 @@ public partial class MainPage : ContentPage
                    / ViewerColumnsNumber;
         for (int i = 0; i < rows; ++i)
         {
-            grid.AddRowDefinition(new RowDefinition(160));
+            grid.AddRowDefinition(new RowDefinition(150));
         }
         
         int p = 0;
         // creating files
         foreach (var v in _controller.CurrentFolder.Files)
         {
-            var imagePath = "document.png";
+            var imagePath = "document2.png";    // default document icon
+            
             if (v.Path.EndsWith(".json"))
                 imagePath = "json.png";
             
@@ -239,12 +260,19 @@ public partial class MainPage : ContentPage
         {
             HorizontalOptions = LayoutOptions.Center,
             Source = imagePath,
-            WidthRequest = 80,
-            HeightRequest = 80,
+            WidthRequest = 70,
+            HeightRequest = 70,
         };
 
         if (component is Folder)
-            image.Clicked += (sender, args) => _controller.GoTo((Folder)component); 
+            image.Clicked += (sender, args) => _controller.GoTo((Folder)component);
+        if (component.Path.EndsWith(".json"))
+            image.Clicked += (sender, args) =>
+            {
+                JsonFileEditorModel.CurrentFolderPath = _controller.CurrentFolder.Path;
+                JsonFileEditorModel.FileName = component.Name;
+                Shell.Current.GoToAsync(nameof(JsonFileEditorPage));
+            }; 
 
         // cropping name if needed
         var name = component.Name.Length > MaxFileNameLength 
@@ -287,5 +315,17 @@ public partial class MainPage : ContentPage
     private void SetStarIcon(bool b)
     {
         _starButton.Source = b ? "star_filled.png" : "star_empty.png";
+    }
+
+    private void CreateClicked(object sender, EventArgs e)
+    {
+        JsonFileEditorModel.CurrentFolderPath = _controller.CurrentFolder.Path;
+        JsonFileEditorModel.FileName = _controller.CurrentFolder.Path;
+        Shell.Current.GoToAsync(nameof(JsonFileEditorPage));
+    }
+
+    private void GetHelpClicked(object sender, EventArgs e)
+    {
+        
     }
 }

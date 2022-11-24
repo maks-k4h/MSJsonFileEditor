@@ -1,18 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MSJsonFileEditor.MainPage"
-             Title="Explorer">
+             x:Class="MSJsonFileEditor.Views.JsonFileEditorPage"
+             Title="Editor">
     
     <ContentPage.MenuBarItems>
         <MenuBarItem Text="File">
-            <MenuFlyoutItem Text="New JSON file"
-                            Clicked="CreateClicked"></MenuFlyoutItem>
+            <MenuFlyoutItem Text="Save"
+                            Clicked="SaveClicked"></MenuFlyoutItem>
+            <MenuFlyoutItem Text="Rename"
+                            Clicked="RenameClicked"></MenuFlyoutItem>
         </MenuBarItem>
         <MenuBarItem Text="Help">
             <MenuFlyoutItem Text="How does it work?"
                             Clicked="GetHelpClicked"></MenuFlyoutItem>
         </MenuBarItem>
     </ContentPage.MenuBarItems>
-    
+
 </ContentPage>
