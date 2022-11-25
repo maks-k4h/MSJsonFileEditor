@@ -1,12 +1,14 @@
 ﻿using System.Globalization;
 using MSJsonFileEditor.Controllers;
+using MSJsonFileEditor.Libs.Meteorites;
 using MSJsonFileEditor.Models;
 using MSJsonFileEditor.Resources.Styles;
 
 namespace MSJsonFileEditor.Views;
 
-public partial class JsonFileEditorPage : ContentPage
+public partial class JsonFileEditorPage
 {
+    // widths of columns
     private const int RemoveRowButtonWidth          = 50;
     private const int LabelFieldWidth               = 200;
     private const int ClassificationFieldWidth      = 150;
@@ -15,35 +17,42 @@ public partial class JsonFileEditorPage : ContentPage
     private const int DiameterFieldWidth            = 150;
     private const int WeightFieldWidth              = 150;
     private const int ChondruleFractionFieldWidth   = 150;
-
-    private const int RowWidth = RemoveRowButtonWidth + LabelFieldWidth + ClassificationFieldWidth
-                                 + LongitudeFieldWidth + LatitudeFieldWidth + DiameterFieldWidth + WeightFieldWidth
+    
+    private const int RowWidth = RemoveRowButtonWidth 
+                                 + LabelFieldWidth 
+                                 + ClassificationFieldWidth
+                                 + LongitudeFieldWidth 
+                                 + LatitudeFieldWidth 
+                                 + DiameterFieldWidth 
+                                 + WeightFieldWidth
                                  + ChondruleFractionFieldWidth;
     
 
-    private Label _statusLabel;
-    private ScrollView _editorViewStackWrapper;
+    private Label       _statusLabel;
+    private ScrollView  _editorViewStackWrapper;
     private List<IView> _editorElements;
 
-    private JsonFileEditorController _controller;
+    private readonly JsonFileEditorController _controller;
 
     public JsonFileEditorPage()
     {
         InitializeComponent();
 
-        _editorElements = new List<IView>();
+        _editorElements = new List<IView>(); // todo: can be used for further optimization
         _controller = new JsonFileEditorController();
-        Content =  GetPage();
-
+        Content = GetPage(); // rendering page
+        
         try
         {
-            _controller.Load();
+            _controller.LoadObservations();
             ShowOkStatus();
         }
         catch (Exception)
         {
             ShowErrorStatus("The file has been damaged.");
         }
+        
+        // rendering data view
         UpdateEditor();
     }
 
@@ -116,16 +125,17 @@ public partial class JsonFileEditorPage : ContentPage
         // add row button
         var button = new Button
         {
-            Text = "+",
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            WidthRequest = RemoveRowButtonWidth,
-            FontSize = 25,
-            TextColor = Colors.Green,
-            BorderColor = Colors.Transparent,
-            BackgroundColor = Colors.Transparent,
+            Text                = "+",
+            FontSize            = 25,
+            TextColor           = Colors.Green,
+            BorderColor         = Colors.Transparent,
+            WidthRequest        = RemoveRowButtonWidth,
+            VerticalOptions     = LayoutOptions.Center,
+            BackgroundColor     = Colors.Transparent,
+            HorizontalOptions   = LayoutOptions.Center,
         };
-        button.Clicked += (sender, _) =>
+        
+        button.Clicked += (_, _) =>
         {
             _controller.AddObservation();
             UpdateEditor();
@@ -170,12 +180,13 @@ public partial class JsonFileEditorPage : ContentPage
     {
         var label = new Label
         {
-            VerticalTextAlignment = TextAlignment.Center,
-            FontSize = 17,
-            Padding = 3,
-            WidthRequest = width,
-            Text = text,
+            Text                    = text,
+            Padding                 = 3,
+            FontSize                = 17,
+            WidthRequest            = width,
+            VerticalTextAlignment   = TextAlignment.Center,
         };
+        
         return label;
     }
 
@@ -184,68 +195,75 @@ public partial class JsonFileEditorPage : ContentPage
         // remove row button
         var removeButton = new Button
         {
-            WidthRequest = RemoveRowButtonWidth,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center,
-            Text = "—",
-            FontSize = 25,
-            TextColor = Colors.Red,
-            BorderColor = Colors.Transparent,
-            BackgroundColor = Colors.Transparent,
+            WidthRequest        = RemoveRowButtonWidth,
+            HorizontalOptions   = LayoutOptions.Center,
+            VerticalOptions     = LayoutOptions.Center,
+            Text                = "—",
+            FontSize            = 25,
+            TextColor           = Colors.Red,
+            BorderColor         = Colors.Transparent,
+            BackgroundColor     = Colors.Transparent,
         };
         
         // label
         var labelEntry = new Entry
         {
-            WidthRequest = LabelFieldWidth,
-            Text = observation.Label,
+            Text            = observation.Label,
+            WidthRequest    = LabelFieldWidth,
         };
 
         // classification
         var classEntry = new Entry
         {
-            WidthRequest = ClassificationFieldWidth,
-            Text = observation.Classification,
+            Text            = observation.Classification,
+            WidthRequest    = ClassificationFieldWidth,
         };
 
         // longitude
         var longitudeEntry = new Entry
         {
-            WidthRequest = LongitudeFieldWidth,
-            Text = observation.Longitude.ToString(CultureInfo.InvariantCulture),
+            Text            = observation.Longitude.ToString(CultureInfo.InvariantCulture),
+            WidthRequest    = LongitudeFieldWidth,
         };
 
         // latitude
         var latitudeEntry = new Entry
         {
-            WidthRequest = LatitudeFieldWidth,
-            Text = observation.Latitude.ToString(CultureInfo.InvariantCulture),
+            Text            = observation.Latitude.ToString(CultureInfo.InvariantCulture),
+            WidthRequest    = LatitudeFieldWidth,
         };
 
         // diameter
         var diameterEntry = new Entry
         {
-            WidthRequest = DiameterFieldWidth,
-            Text = observation.Diameter.ToString(CultureInfo.InvariantCulture),
+            Text            = observation.Diameter.ToString(CultureInfo.InvariantCulture),
+            WidthRequest    = DiameterFieldWidth,
         };
 
         // weight
-        var weigthEntry = new Entry
+        var weightEntry = new Entry
         {
-            WidthRequest = WeightFieldWidth,
-            Text = observation.Weight.ToString(CultureInfo.InvariantCulture),
+            Text            = observation.Weight.ToString(CultureInfo.InvariantCulture),
+            WidthRequest    = WeightFieldWidth,
         };
 
         // chondrule fraction
         var chondruleFractionEntry = new Entry
         {
-            WidthRequest = ChondruleFractionFieldWidth,
-            Text = observation.ChondruleFraction.ToString(CultureInfo.InvariantCulture),
+            Text            = observation.ChondruleFraction.ToString(CultureInfo.InvariantCulture),
+            WidthRequest    = ChondruleFractionFieldWidth,
         };
         
         // setting logic
-        SetRowHandlers(observation, removeButton, labelEntry, classEntry, longitudeEntry, latitudeEntry, 
-            diameterEntry, weigthEntry, chondruleFractionEntry);
+        SetRowHandlers(observation, 
+            removeButton, 
+            labelEntry, 
+            classEntry, 
+            longitudeEntry, 
+            latitudeEntry, 
+            diameterEntry, 
+            weightEntry, 
+            chondruleFractionEntry);
 
         // wrapper
         var horizontalStack = new HorizontalStackLayout
@@ -256,7 +274,7 @@ public partial class JsonFileEditorPage : ContentPage
             longitudeEntry,
             latitudeEntry,
             diameterEntry,
-            weigthEntry,
+            weightEntry,
             chondruleFractionEntry,
         };
 
@@ -267,7 +285,7 @@ public partial class JsonFileEditorPage : ContentPage
         Entry longitude, Entry latitude, Entry diameter, Entry weight, Entry chondrule)
     {
         // remove button
-        remove.Clicked += (sender, args) =>
+        remove.Clicked += (_, _) =>
         {
             _controller.RemoveObservation(observation);
             UpdateEditor();
@@ -275,7 +293,7 @@ public partial class JsonFileEditorPage : ContentPage
         };
 
         // label entry
-        label.Completed += (sender, args) =>
+        label.Completed += (_, _) =>
         {
             try
             {
@@ -290,7 +308,7 @@ public partial class JsonFileEditorPage : ContentPage
         };
         
         // classification entry
-        classification.Completed += (sender, args) =>
+        classification.Completed += (_, _) =>
         {
             try
             {
@@ -305,7 +323,7 @@ public partial class JsonFileEditorPage : ContentPage
         };
         
         // longitude entry
-        longitude.Completed += (sender, args) =>
+        longitude.Completed += (_, _) =>
         {
             try
             {
@@ -315,12 +333,12 @@ public partial class JsonFileEditorPage : ContentPage
             catch (Exception e)
             {
                 ShowErrorStatus(e.Message);
-                longitude.Text = observation.Longitude.ToString();
+                longitude.Text = observation.Longitude.ToString(CultureInfo.InvariantCulture);
             }
         };
         
         // latitude entry
-        latitude.Completed += (sender, args) =>
+        latitude.Completed += (_, _) =>
         {
             try
             {
@@ -330,12 +348,12 @@ public partial class JsonFileEditorPage : ContentPage
             catch (Exception e)
             {
                 ShowErrorStatus(e.Message);
-                latitude.Text = observation.Latitude.ToString();
+                latitude.Text = observation.Latitude.ToString(CultureInfo.InvariantCulture);
             }
         };
         
         // diameter entry
-        diameter.Completed += (sender, args) =>
+        diameter.Completed += (_, _) =>
         {
             try
             {
@@ -345,12 +363,12 @@ public partial class JsonFileEditorPage : ContentPage
             catch (Exception e)
             {
                 ShowErrorStatus(e.Message);
-                diameter.Text = observation.Diameter.ToString();
+                diameter.Text = observation.Diameter.ToString(CultureInfo.InvariantCulture);
             }
         };
         
         // weight entry
-        weight.Completed += (sender, args) =>
+        weight.Completed += (_, _) =>
         {
             try
             {
@@ -360,12 +378,12 @@ public partial class JsonFileEditorPage : ContentPage
             catch (Exception e)
             {
                 ShowErrorStatus(e.Message);
-                weight.Text = observation.Weight.ToString();
+                weight.Text = observation.Weight.ToString(CultureInfo.InvariantCulture);
             }
         };
         
         // chondrule fraction
-        chondrule.Completed += (sender, args) =>
+        chondrule.Completed += (_, _) =>
         {
             try
             {
@@ -375,7 +393,7 @@ public partial class JsonFileEditorPage : ContentPage
             catch (Exception e)
             {
                 ShowErrorStatus(e.Message);
-                chondrule.Text = observation.ChondruleFraction.ToString();
+                chondrule.Text = observation.ChondruleFraction.ToString(CultureInfo.InvariantCulture);
             }
         };
     }
@@ -400,7 +418,7 @@ public partial class JsonFileEditorPage : ContentPage
     
     private void SaveClicked(object sender, EventArgs e)
     {
-        _controller.Save();
+        _controller.SaveObservations();
         ShowOkStatus("Saved!", "💾");
     }
     

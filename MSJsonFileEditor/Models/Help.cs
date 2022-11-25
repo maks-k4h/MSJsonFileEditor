@@ -1,4 +1,4 @@
-namespace XMLViewer.Models;
+namespace MSJsonFileEditor.Models;
 
 public class Help
 {

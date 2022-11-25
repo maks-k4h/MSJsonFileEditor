@@ -2,12 +2,12 @@ namespace MSJsonFileEditor.Libs.FileExplorer;
 
 public class File : FilesystemComponent
 {
-    public File(string path, string name = null) : base(path, name)
+    public File(Folder parent, string path, string name = null) : base(path, name, parent)
     {
     }
 
-    public override void Open()
+    public override bool IsLeaf()
     {
-        throw new NotImplementedException();
+        return true;
     }
 }

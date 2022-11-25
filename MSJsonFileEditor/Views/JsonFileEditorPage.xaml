@@ -7,13 +7,13 @@
     <ContentPage.MenuBarItems>
         <MenuBarItem Text="File">
             <MenuFlyoutItem Text="Save"
-                            Clicked="SaveClicked"></MenuFlyoutItem>
+                            Clicked="SaveClicked"/>
             <MenuFlyoutItem Text="Rename"
-                            Clicked="RenameClicked"></MenuFlyoutItem>
+                            Clicked="RenameClicked"/>
         </MenuBarItem>
         <MenuBarItem Text="Help">
             <MenuFlyoutItem Text="How does it work?"
-                            Clicked="GetHelpClicked"></MenuFlyoutItem>
+                            Clicked="GetHelpClicked"/>
         </MenuBarItem>
     </ContentPage.MenuBarItems>
 

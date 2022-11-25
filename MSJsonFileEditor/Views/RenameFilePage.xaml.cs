@@ -1,46 +1,44 @@
-﻿using MSJsonFileEditor.Controllers;
-using MSJsonFileEditor.Libs.FileExplorer;
-using MSJsonFileEditor.Models;
-using MSJsonFileEditor.Resources.Styles;
-using MSJsonFileEditor.Views;
+﻿using MSJsonFileEditor.Models;
 
-namespace MSJsonFileEditor;
+namespace MSJsonFileEditor.Views;
 
-public partial class RenameFilePage : ContentPage
+public partial class RenameFilePage
 {
     public RenameFilePage()
     {
         InitializeComponent();
-        Content = GetPageContent();
+        Content = GetPageContent(); // rendering
     }
 
     private View GetPageContent()
     {
         var fileNameEntry = new Entry
         {
-            FontSize = 18,
-            Placeholder = "New file name (without extension)",
-            HeightRequest = 35,
-            WidthRequest = 300,
+            FontSize        = 18,
+            Placeholder     = "New file name (without extension)",
+            WidthRequest    = 300,
+            HeightRequest   = 35,
         };
         var button = new Button
         {
-            FontSize = 18,
-            Text = "Save",
-            HeightRequest = 35,
-            WidthRequest = 90,
-            Margin = new Thickness(5, 0, 0, 0)
+            Text            = "Save",
+            Margin          = new Thickness(5, 0, 0, 0),
+            FontSize        = 18,
+            WidthRequest    = 90,
+            HeightRequest   = 35,
         };
         var content = new VerticalStackLayout
         {
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions =LayoutOptions.Center,
+            VerticalOptions     = LayoutOptions.Center,
+            HorizontalOptions   = LayoutOptions.Center,
             Children =
-                { new HorizontalStackLayout { fileNameEntry, button } }
+            {
+                new HorizontalStackLayout { fileNameEntry, button }
+            }
         };
         
         // adding a handler
-        button.Clicked += (sender, args) => SaveName(fileNameEntry.Text ?? " ");
+        button.Clicked += (_, _) => SaveName(fileNameEntry.Text ?? " ");
 
         return content;
     }

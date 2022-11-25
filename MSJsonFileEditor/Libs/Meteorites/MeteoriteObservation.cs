@@ -1,13 +1,13 @@
 using System.Text.Json.Serialization;
 
-namespace MSJsonFileEditor.Models;
+namespace MSJsonFileEditor.Libs.Meteorites;
 
 public class MeteoriteObservation
 {
-    public const double MaxLatitude     = 90;
-    public const double MinLatitude     = -90;
-    public const double MaxLongitude    = 180;
-    public const double MinLongitude    = -180;
+    private const double MaxLatitude     = 90;
+    private const double MinLatitude     = -90;
+    private const double MaxLongitude    = 180;
+    private const double MinLongitude    = -180;
     
     [JsonPropertyName("label")]
     public string Label;

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:MSJsonFileEditor.Models"
              x:Class="MSJsonFileEditor.Views.HelpPage"
-             xmlns:models="clr-namespace:XMLViewer.Models"
              Title="Help">
     
     <ContentPage.BindingContext>
@@ -50,7 +50,8 @@
                 <Label Text="You can check the current name of the file while in editor by looking at the top of the window."></Label>
                 
                 <Label Margin="0,10,0,0" FontSize="20">My file hasn't been saved, why is that?</Label>
-                <Label Text="The current version of the editor doesn't support automatic file backup. You have to save files manually whenever you need to by clicking the 'file' menu at the top and selecting the proper option. You can ensure in success of the procedure by looking at the status label at the bottom of the editor's window."></Label>
+                <Label Text="The current version of the editor doesn't support automatic file backup. You have to save files manually whenever you need to by clicking the 'file' menu at the top and selecting the proper option. "></Label>
+                <Label Text="You can ensure in success of the procedure by looking at the status label at the bottom of the editor's window."></Label>
                 
             </VerticalStackLayout>
         </ScrollView>

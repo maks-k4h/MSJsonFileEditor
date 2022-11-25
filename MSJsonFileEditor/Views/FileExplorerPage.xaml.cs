@@ -2,38 +2,40 @@
 using MSJsonFileEditor.Libs.FileExplorer;
 using MSJsonFileEditor.Models;
 using MSJsonFileEditor.Resources.Styles;
-using MSJsonFileEditor.Views;
-using File = System.IO.File;
 
-namespace MSJsonFileEditor;
+namespace MSJsonFileEditor.Views;
 
-public partial class MainPage : ContentPage
+public partial class MainPage
 {
-    private static int ViewerColumnsNumber  = 5;
-    private static int MaxFileNameLength    = 40;
+    private const int MaxFileNameLength     = 40;
+    private const int ViewerColumnsNumber   = 5;
+
+    private readonly FileExplorerController _controller;
     
-    private FileExplorerController _controller;
-    
-    private Label _statusLabel;
-    private ScrollView _filesystemViewerWrapper;
-    private ScrollView _starredFoldersWrapper;
+    private Label       _statusLabel;
+    private ScrollView  _filesystemViewerWrapper;
+    private ScrollView  _starredFoldersWrapper;
     private ImageButton _starButton;
 
     public MainPage()
     {
         InitializeComponent();
+        
+        // rendering page
         _controller = new FileExplorerController();
         Content = GetMainPage();
         UpdateViewer();
-
-        _controller.CurrentFolderUpdated += (sender, args) => UpdateViewer();
-        ShowStatus();
+        
+        _controller.CurrentFolderUpdated += (_, _) => UpdateViewer();
+        ShowStatus();   // ok status (empty message)
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        _controller.Update();
+        
+        // updating controller -> rendering updates
+        _controller.Update(); 
     }
 
     private View GetMainPage()
@@ -52,9 +54,11 @@ public partial class MainPage : ContentPage
                 new ColumnDefinition{Width = new GridLength(0)},
             }
         };
-
+        
+        // side bar
         var sideBar = GetSideBar();
-        _filesystemViewerWrapper = new ScrollView { };
+        // viewer
+        _filesystemViewerWrapper = new ScrollView();
         
         grid.Add(sideBar);
         grid.Add(_filesystemViewerWrapper, 1);
@@ -91,48 +95,47 @@ public partial class MainPage : ContentPage
     {
         var backwardButton = new Button
         {
+            Text            = "<",
+            FontSize        = 20,
+            TextColor       = Colors.Black,
             BackgroundColor = Colors.Transparent,
-            TextColor = Colors.Black,
-            Text = "<",
-            FontSize = 20,
         };
         var forwardButton = new Button
         {
+            Text            = ">",
+            FontSize        = 20,
+            TextColor       = Colors.Black,
             BackgroundColor = Colors.Transparent,
-            TextColor = Colors.Black,
-            FontSize = 20,
-            Text = ">"
         };
 
         _starButton = new ImageButton()
         {
-            HeightRequest = 15,
-            WidthRequest = 15,
-            Scale = .4,
+            Scale           = .4,
+            WidthRequest    = 15,
+            HeightRequest   = 15,
             BackgroundColor = Colors.Transparent,
         };
 
         var plusButton = new ImageButton
         {
-            HeightRequest = 15,
-            WidthRequest = 15,
-            Scale = .415,
-            Margin = new Thickness(0,2,0,0),
-            Source = "plus.png",
+            Scale           = .415,
+            Margin          = new Thickness(0,2,0,0),
+            Source          = "plus.png",
+            WidthRequest    = 15,
+            HeightRequest   = 15,
             BackgroundColor = Colors.Transparent,
         };
-        
-        _starButton.Clicked += (sender, args) => SetStar(!_controller.IsStarred()); ;
-        plusButton.Clicked += CreateClicked;
-        
-        backwardButton.Clicked  += (sender, args) => _controller.ReturnBack();
-        forwardButton.Clicked   += (sender, args) => _controller.ReturnForward(); 
+
+        plusButton.Clicked      += CreateClicked;
+        _starButton.Clicked     += StarClicked;
+        forwardButton.Clicked   += ReturnForwardClicked; 
+        backwardButton.Clicked  += ReturnBackClicked;
         
         var stack = new HorizontalStackLayout
         {
-            Padding = 5,
-            Spacing = 5,
-            Children = { backwardButton, forwardButton, plusButton, _starButton }
+            Padding         = 5,
+            Spacing         = 5,
+            Children        = { backwardButton, forwardButton, plusButton, _starButton }
         };
 
         return stack;
@@ -146,7 +149,7 @@ public partial class MainPage : ContentPage
         {
             Padding = 15,
             Spacing = 5,
-            Children =
+            Children=
             {
                 new Label { FontSize = 19, Text = "Quick access" },
                 GetThisComputerAccessElement(),
@@ -159,37 +162,33 @@ public partial class MainPage : ContentPage
 
     private View GetThisComputerAccessElement()
     {
-        var stack = new VerticalStackLayout { };
+        var stack = new VerticalStackLayout();
 
         foreach (var v in _controller.Default)
-        {
-            stack.Add(GetSidebarQuickAccessItem(v.Name, (sender, args) => _controller.GoTo(v)));
-        }
-        
+            stack.Add(GetSidebarQuickAccessItem(v.Name, (_, _) => _controller.GoTo(v)));
+
         return stack;
     }
 
     private View GetFavoritesAccessElement()
     {
-        var stack = new VerticalStackLayout { };
+        var stack = new VerticalStackLayout();
 
         foreach (var v in _controller.Starred)
-        {
-            stack.Add(GetSidebarQuickAccessItem(v.Name, (sender, args) => _controller.GoTo(v)));
-        }
-        
+            stack.Add(GetSidebarQuickAccessItem(v.Name, (_, _) => _controller.GoTo(v)));
+
         return stack;
     }
 
-    private View GetSidebarQuickAccessItem(string title, EventHandler handler)
+    private static View GetSidebarQuickAccessItem(string title, EventHandler handler)
     {
         var button = new Button
         {
-            Text = title,
-            TextColor = AppColors.Primary,
-            FontSize = 18,
-            HorizontalOptions = LayoutOptions.Start,
-            BackgroundColor = Colors.Transparent,
+            Text                = title,
+            FontSize            = 18,
+            TextColor           = AppColors.Primary,
+            BackgroundColor     = Colors.Transparent,
+            HorizontalOptions   = LayoutOptions.Start,
         };
         
         button.Clicked += handler;
@@ -200,8 +199,10 @@ public partial class MainPage : ContentPage
     private View GetStatusLabel()
     {
         _statusLabel = new Label { 
-            Text = " ",
-            TextColor = Colors.Red 
+            Text                = " ",
+            TextColor           = Colors.Red,
+            VerticalOptions     = LayoutOptions.Center,
+            HorizontalOptions   = LayoutOptions.Center,
         };
         return _statusLabel;
     }
@@ -210,73 +211,73 @@ public partial class MainPage : ContentPage
     {
         var grid = new Grid
         {
-            ColumnSpacing = 20,
-            RowSpacing = 20,
-            Padding = 15,
+            Padding         = 15,
+            RowSpacing      = 20,
+            ColumnSpacing   = 20,
         };
-
-        for (int i = 0; i < ViewerColumnsNumber; ++i)
-        {
-            grid.AddColumnDefinition(new ColumnDefinition(110));
-        }
         
-        var rows = 1 + (_controller.CurrentFolder.Files.Count + _controller.CurrentFolder.Subfolders.Count)
-                   / ViewerColumnsNumber;
-        for (int i = 0; i < rows; ++i)
-        {
+        // calculating the needed number of rows
+        var rows = 1 + _controller.CurrentFolder.Children.Count / ViewerColumnsNumber;
+        
+        for (int i = 0; i < rows; ++i) 
             grid.AddRowDefinition(new RowDefinition(150));
-        }
         
+        for (int i = 0; i < ViewerColumnsNumber; ++i)
+            grid.AddColumnDefinition(new ColumnDefinition(110));
+
         int p = 0;
-        // creating files
-        foreach (var v in _controller.CurrentFolder.Files)
+        foreach (var v in _controller.CurrentFolder.Children)
         {
-            var imagePath = "default_file.png";    // default document icon
-            
-            if (v.Path.EndsWith(".json"))
-                imagePath = "json_file.png";
-            if (v.Path.EndsWith(".pdf"))
-                imagePath = "pdf_file.png";
-            if (v.Path.EndsWith(".jpg") || v.Path.EndsWith(".jpeg") || v.Path.EndsWith(".png"))
-                imagePath = "image_file.png";
-            
-            grid.Add(GetFilesystemComponentView(v, imagePath), p % ViewerColumnsNumber, p / ViewerColumnsNumber);
-            ++p;
-        }
-        
-        // creating folder
-        foreach (var v in _controller.CurrentFolder.Subfolders)
-        {
-            grid.Add(GetFilesystemComponentView(v, "folder.png"), p % ViewerColumnsNumber, p / ViewerColumnsNumber);
+            if (v.IsLeaf())
+            {
+                grid.Add(GetFilesystemComponentView(v, GetImagePathFromFileName(v.Name)), 
+                    p % ViewerColumnsNumber, 
+                    p / ViewerColumnsNumber);
+            }
+            else
+            {
+                grid.Add(GetFilesystemComponentView(v, GetFolderImagePath()), 
+                    p % ViewerColumnsNumber, 
+                    p / ViewerColumnsNumber);
+            }
             ++p;
         }
 
+        // rendering
         _filesystemViewerWrapper.Content = grid;
-
         Title = _controller.CurrentFolder.Path;
-        
         SetStarIcon(_controller.IsStarred());
+        ShowStatus();
+    }
+
+    private static string GetFolderImagePath()
+    {
+        return "folder.png";
+    }
+
+    private static string GetImagePathFromFileName(string filename)
+    {
+        if (filename.EndsWith(".json"))
+            return "json_file.png";
+        if (filename.EndsWith(".pdf"))
+            return "pdf_file.png";
+        if (filename.EndsWith(".jpg") || filename.EndsWith(".jpeg") || filename.EndsWith(".png"))
+            return "image_file.png";
+        
+        return "default_file.png";
     }
 
     private View GetFilesystemComponentView(FilesystemComponent component, string imagePath)
     {
         var image = new ImageButton
         {
-            HorizontalOptions = LayoutOptions.Center,
-            Source = imagePath,
-            WidthRequest = 70,
-            HeightRequest = 70,
+            Source              = imagePath,
+            WidthRequest        = 70,
+            HeightRequest       = 70,
+            HorizontalOptions   = LayoutOptions.Center,
         };
 
-        if (component is Folder)
-            image.Clicked += (sender, args) => _controller.GoTo((Folder)component);
-        if (component.Path.EndsWith(".json"))
-            image.Clicked += (sender, args) =>
-            {
-                JsonFileEditorModel.CurrentFolderPath = _controller.CurrentFolder.Path;
-                JsonFileEditorModel.FileName = component.Name;
-                Shell.Current.GoToAsync(nameof(JsonFileEditorPage));
-            }; 
+        SetFilesystemComponentClickedHandler(image, component);
 
         // cropping name if needed
         var name = component.Name.Length > MaxFileNameLength 
@@ -285,8 +286,8 @@ public partial class MainPage : ContentPage
         
         var label = new Label
         {
-            Text = name, 
-            FontSize = 16,
+            Text                    = name, 
+            FontSize                = 16,
             HorizontalTextAlignment = TextAlignment.Center
         };
         
@@ -301,7 +302,21 @@ public partial class MainPage : ContentPage
         };
         return stack;
     }
-    
+
+    private void SetFilesystemComponentClickedHandler(ImageButton image, FilesystemComponent component)
+    {
+        if (component is Folder)
+            image.Clicked += (_, _) => _controller.GoTo((Folder)component);
+        else if (component.Path.EndsWith(".json"))
+            image.Clicked += (_, _) =>
+            {
+                JsonFileEditorModel.CurrentFolderPath = _controller.CurrentFolder.Path;
+                JsonFileEditorModel.FileName = component.Name;
+                Shell.Current.GoToAsync(nameof(JsonFileEditorPage));
+            };
+        else
+            image.Clicked += (_, _) => ShowStatus("Only JSON files can be opened!");
+    }
 
     private void ShowStatus(string s = "")
     {
@@ -323,9 +338,25 @@ public partial class MainPage : ContentPage
 
     private void CreateClicked(object sender, EventArgs e)
     {
-        JsonFileEditorModel.CurrentFolderPath = _controller.CurrentFolder.Path;
-        JsonFileEditorModel.FileName = _controller.CurrentFolder.Path;
+        JsonFileEditorModel.FileName            = "";
+        JsonFileEditorModel.CurrentFolderPath   = _controller.CurrentFolder.Path;
+        
         Shell.Current.GoToAsync(nameof(JsonFileEditorPage));
+    }
+
+    private void ReturnBackClicked(object sender, EventArgs e)
+    {
+        _controller.ReturnBack();
+    }
+
+    private void ReturnForwardClicked(object sender, EventArgs e)
+    {
+        _controller.ReturnForward();
+    }
+
+    private void StarClicked(object sender, EventArgs e)
+    {
+        SetStar(!_controller.IsStarred());
     }
 
     private void GetHelpClicked(object sender, EventArgs e)

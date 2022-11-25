@@ -1,20 +1,18 @@
-using System.Text.Json;
+using MSJsonFileEditor.Libs.Meteorites;
+using MSJsonFileEditor.Libs.Meteorites.MeteoriteSerialization;
 using MSJsonFileEditor.Models;
 
 namespace MSJsonFileEditor.Controllers;
 
 public class JsonFileEditorController
 {
-    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        IncludeFields = true,
-    };
-    
-    private JsonFileEditorModel _model;
+    private readonly SerializationContext _serializationContext;
+    private readonly JsonFileEditorModel _model;
 
     public JsonFileEditorController()
     {
+        _serializationContext = new SerializationContext();
+        _serializationContext.SetStrategy(SerializationContext.Strategy.Json);
         _model = new JsonFileEditorModel();
     }
 
@@ -33,17 +31,14 @@ public class JsonFileEditorController
         return _model.Observations.Remove(observation);
     }
 
-    public async void Save()
+    public void SaveObservations()
     {
         var path = Path.Combine(JsonFileEditorModel.CurrentFolderPath, JsonFileEditorModel.FileName);
-
-        using (FileStream fs = new FileStream(path, FileMode.Create))
-        {
-            await JsonSerializer.SerializeAsync(fs, _model.Observations, _jsonOptions);
-        }
+        
+        _serializationContext.Serialize(path, GetObservations());
     }
 
-    public void Load()
+    public void LoadObservations()
     {
         // nothing to load
         if (JsonFileEditorModel.FileName.Trim().Length == 0)
@@ -51,7 +46,6 @@ public class JsonFileEditorController
 
         // loading form file
         var path = Path.Combine(JsonFileEditorModel.CurrentFolderPath, JsonFileEditorModel.FileName);
-        using FileStream fs = new FileStream(path, FileMode.Open);
-        _model.Observations = JsonSerializer.Deserialize<List<MeteoriteObservation>>(fs, _jsonOptions);
+        _model.Observations = _serializationContext.Deserialize(path);
     }
 }

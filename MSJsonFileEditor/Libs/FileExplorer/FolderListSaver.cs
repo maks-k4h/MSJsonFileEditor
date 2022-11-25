@@ -1,8 +1,9 @@
 namespace MSJsonFileEditor.Libs.FileExplorer;
 
-public class FolderListSaver
+public static class FolderListSaver
 {
-    private static readonly string Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+    private static readonly string Path = System.IO.Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "MSJsonFileEditorFavorites.txt");
 
     public static List<Folder> Load()
@@ -10,10 +11,7 @@ public class FolderListSaver
         var res = new List<Folder>();
         try
         {
-            foreach (var path in System.IO.File.ReadLines(Path))
-            {
-                res.Add(new Folder(path));
-            }
+            res.AddRange(System.IO.File.ReadLines(Path).Select(path => new Folder(path)));
         }
         catch (Exception)
         {
