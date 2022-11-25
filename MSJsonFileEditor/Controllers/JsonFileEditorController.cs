@@ -8,7 +8,7 @@ public class JsonFileEditorController
     private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
     {
         WriteIndented = true,
-        IncludeFields = true
+        IncludeFields = true,
     };
     
     private JsonFileEditorModel _model;
@@ -16,15 +16,6 @@ public class JsonFileEditorController
     public JsonFileEditorController()
     {
         _model = new JsonFileEditorModel();
-
-        try
-        {
-            Load();
-        }
-        catch (Exception)
-        {
-            _model.Observations.Add(new MeteoriteObservation());
-        }
     }
 
     public List<MeteoriteObservation> GetObservations()
@@ -54,10 +45,13 @@ public class JsonFileEditorController
 
     public void Load()
     {
+        // nothing to load
+        if (JsonFileEditorModel.FileName.Trim().Length == 0)
+            return;
+
+        // loading form file
         var path = Path.Combine(JsonFileEditorModel.CurrentFolderPath, JsonFileEditorModel.FileName);
-        using (FileStream fs = new FileStream(path, FileMode.Open))
-        {
-            _model.Observations = JsonSerializer.Deserialize<List<MeteoriteObservation>>(fs, _jsonOptions);
-        }
+        using FileStream fs = new FileStream(path, FileMode.Open);
+        _model.Observations = JsonSerializer.Deserialize<List<MeteoriteObservation>>(fs, _jsonOptions);
     }
 }

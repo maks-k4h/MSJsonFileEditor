@@ -330,6 +330,6 @@ public partial class MainPage : ContentPage
 
     private void GetHelpClicked(object sender, EventArgs e)
     {
-        
+        Shell.Current.GoToAsync(nameof(HelpPage));
     }
 }

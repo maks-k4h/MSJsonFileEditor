@@ -47,7 +47,7 @@ public partial class RenameFilePage : ContentPage
 
     private void GetHelpClicked(object sender, EventArgs e)
     {
-        
+        Shell.Current.GoToAsync(nameof(HelpPage));
     }
 
     private void SaveName(string name)

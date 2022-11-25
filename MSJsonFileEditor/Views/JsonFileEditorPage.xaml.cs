@@ -33,22 +33,24 @@ public partial class JsonFileEditorPage : ContentPage
 
         _editorElements = new List<IView>();
         _controller = new JsonFileEditorController();
-       Content =  GetPage();
+        Content =  GetPage();
+
+        try
+        {
+            _controller.Load();
+            ShowOkStatus();
+        }
+        catch (Exception)
+        {
+            ShowErrorStatus("The file has been damaged.");
+        }
+        UpdateEditor();
     }
 
     protected override void OnAppearing()
     {
-        Title = JsonFileEditorModel.FileName;
         base.OnAppearing();
-        try
-        {
-            ShowOkStatus();
-            UpdateEditor();
-        }
-        catch (Exception e)
-        {
-            ShowErrorStatus(e.Message);
-        }
+        Title = JsonFileEditorModel.FileName;
     }
 
     private View GetPage()
@@ -88,13 +90,16 @@ public partial class JsonFileEditorPage : ContentPage
 
     private void UpdateEditor()
     {
+        // Todo : update procedure can be significantly optimized by wise usage of this list...
         _editorElements = new List<IView>();
+        
         var editorView = GetEditor();
 
-        foreach (var observation in _controller.GetObservations())
-        {
-            _editorElements.Add(GetEditorElement(observation));
-        }
+        if (_controller != null)
+            foreach (var observation in _controller.GetObservations())
+            {
+                _editorElements.Add(GetEditorElement(observation));
+            }
         
         editorView.Add(GetColumnHeadersElement());
 
@@ -390,7 +395,7 @@ public partial class JsonFileEditorPage : ContentPage
     
     private void GetHelpClicked(object sender, EventArgs e)
     {
-        
+        Shell.Current.GoToAsync(nameof(HelpPage));
     }
     
     private void SaveClicked(object sender, EventArgs e)

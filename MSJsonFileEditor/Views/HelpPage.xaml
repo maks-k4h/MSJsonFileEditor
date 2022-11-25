@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MSJsonFileEditor.Views.HelpPage"
+             xmlns:models="clr-namespace:XMLViewer.Models"
+             Title="Help">
+    
+    <ContentPage.BindingContext>
+        <models:Help></models:Help>
+    </ContentPage.BindingContext>
+    
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+        
+        <VerticalStackLayout Margin="10">
+            <Label Text="{Binding Title}" FontSize="{Binding TitleFontSize}" FontAttributes="Bold"></Label>
+            <HorizontalStackLayout Margin="3,0,3,20">
+                <Label FontSize="{Binding VersionFontSize}" Text="Version " FontAttributes="Italic" TextColor="Silver"></Label>
+                <Label FontSize="{Binding VersionFontSize}" Text="{Binding Version}" FontAttributes="Italic" TextColor="Silver"></Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout> 
+        
+        <Label Text="{Binding Description}" Margin="10" FontSize="{Binding DescriptionFontSize}" WidthRequest="700"></Label>
+        <ScrollView HeightRequest="400" WidthRequest="700">
+            <VerticalStackLayout WidthRequest="700" HeightRequest="3000">
+                <Label Margin="0,10" FontSize="30" FontAttributes="Bold">FAQ</Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">What is MS Json File Editor?</Label>
+                <Label Text="It's an almost useless app created for the sake of education that allows you to explore your filesystem, create json files of specific format, edit them and save under desired name."></Label>
+                <Label Text="More specifically, those json files contain information about meteorite observations."></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">What are the abilities of the file explorer?</Label>
+                <Label Text="File explorer is the first of two pillars of the app. It is very minimalistic filesystem viewer. You can add any folder you visit to favorites list, create new json files and open existing ones in it."></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">How to add a folder to favorites?</Label>
+                <Label Text="When exploring a folder just click the star button at the top-left corner of the window."></Label>
+                <Label Text="The folder's name will then be displayed in the list and will remain there upon subsequent app launches."></Label>
+                <Label Text="To remove the folder from favorites list simply open it and click the same star button."></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">What are those arrows in the file explorer?</Label>
+                <Label Text="They enable you to quickly navigate through visited folders. Click the first arrow to return back and the second to go forward after returning back. (In current version you can go forward only ones.)"></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">How to created new json file?</Label>
+                <Label Text="Click the 'file' menu at the top and select the proper option or click plus icon at the top-left corner of the window. You will be redirected to the json file editor at ones. Remember to save your json file before leaving!"></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">Why my JSON file cannot be opened?</Label>
+                <Label Text="If you worked with the file without editor or simply opened it to look through be sure all opening and closing brackets are present, naming convention is followed. You can also check those even if you haven't open the file in other apps."></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">How can I rename the file?</Label>
+                <Label Text="Click the 'file' menu at the top and select the proper option. You will be redirected to the page where you can enter new name for your file. Be sure to click save before leaving."></Label>
+                <Label Text="You can check the current name of the file while in editor by looking at the top of the window."></Label>
+                
+                <Label Margin="0,10,0,0" FontSize="20">My file hasn't been saved, why is that?</Label>
+                <Label Text="The current version of the editor doesn't support automatic file backup. You have to save files manually whenever you need to by clicking the 'file' menu at the top and selecting the proper option. You can ensure in success of the procedure by looking at the status label at the bottom of the editor's window."></Label>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+    </VerticalStackLayout>
+</ContentPage>

@@ -10,5 +10,6 @@ public partial class AppShell : Shell
         
         Routing.RegisterRoute(nameof(JsonFileEditorPage), typeof(JsonFileEditorPage));
         Routing.RegisterRoute(nameof(RenameFilePage), typeof(RenameFilePage));
+        Routing.RegisterRoute(nameof(HelpPage), typeof(HelpPage));
     }
 }
